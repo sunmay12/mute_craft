@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.ImageIcon;
@@ -44,13 +45,14 @@ public class P01 extends JFrame {
         contentPane.setLayout(null);
 
         // 이미지 아이콘 설정
-        ImageIcon keyboard = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\keyboard.png");
-        ImageIcon button_back = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\button_back.png");
-        ImageIcon button_play = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\button_play.png");
-        ImageIcon button_stop = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\button_stop.png");
-        ImageIcon button_record = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\button_record.png");
-        ImageIcon metronome = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\metronome.png");
-        ImageIcon button_add = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\button_add.png");
+        ImageIcon keyboard = new ImageIcon(getClass().getResource("/img/keyboard.png"));
+        ImageIcon button_back = new ImageIcon(getClass().getResource("/img/button_back.png"));
+        ImageIcon button_play = new ImageIcon(getClass().getResource("/img/button_play.png"));
+        ImageIcon button_stop = new ImageIcon(getClass().getResource("/img/button_stop.png"));
+        ImageIcon button_record = new ImageIcon(getClass().getResource("/img/button_record.png"));
+        ImageIcon metronome = new ImageIcon(getClass().getResource("/img/metronome.png"));
+        ImageIcon button_add = new ImageIcon(getClass().getResource("/img/button_add.png"));
+
 
         // panel_buttons (버튼을 담을 패널)
         JPanel panel_buttons = new JPanel();
@@ -132,16 +134,15 @@ public class P01 extends JFrame {
         panel_notes_white.setOpaque(false);    // 패널도 투명하게 설정
         contentPane.add(panel_notes_white);    // contentPane에 패널을 추가
 
-        // 1번부터 28번까지 버튼을 동적으로 생성하여 이미지 로드
+     // 1번부터 28번까지 버튼을 동적으로 생성하여 이미지 로드
         for (int i = 1; i <= 28; i++) {
             JButton button = new JButton();
-            String imagePath = "C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\notes\\notes_" + String.format("%02d", i) + ".png";
+            String imagePath = "/img/notes/notes_" + String.format("%02d", i) + ".png";
 
-            // 이미지 아이콘을 버튼에 추가
-            File imageFile = new File(imagePath);
-            if (imageFile.exists()) {
-                ImageIcon noteIcon = new ImageIcon(imagePath);
+            // getClass().getResource()를 사용하여 이미지를 불러오기
+            ImageIcon noteIcon = new ImageIcon(getClass().getResource(imagePath));
 
+            if (noteIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                 // 이미지를 버튼 크기에 맞게 리사이즈
                 ImageIcon resizedIcon = new ImageIcon(noteIcon.getImage().getScaledInstance(80, 76, Image.SCALE_SMOOTH));
                 button.setIcon(resizedIcon);
@@ -151,7 +152,7 @@ public class P01 extends JFrame {
                 button.setContentAreaFilled(false); // 버튼 배경을 없앰
                 button.setBorderPainted(false);     // 버튼 테두리 없애기
                 button.setPreferredSize(new java.awt.Dimension(80, 76));  // 버튼 크기 설정 (이미지 크기에 맞게 조정)
-                
+
                 final int buttonIndex = i;  // 버튼 인덱스를 final로 처리
                 button.addActionListener(new ActionListener() {
                     @Override
@@ -164,7 +165,7 @@ public class P01 extends JFrame {
             } else {
                 System.out.println("이미지 파일이 존재하지 않습니다: " + imagePath);
             }
-        }
+        }     
         
         JPanel panel_notes_black = new JPanel();
         panel_notes_black.setBounds(0, 200, 1476, 322);
@@ -173,11 +174,12 @@ public class P01 extends JFrame {
         panel_notes_black.setOpaque(false);
         contentPane.add(panel_notes_black);
         
-        ImageIcon c = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\notes\\notes_c#.png");
-        ImageIcon e = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\notes\\notes_eb.png");
-        ImageIcon f = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\notes\\notes_f#.png");
-        ImageIcon a = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\notes\\notes_ab.png");
-        ImageIcon b = new ImageIcon("C:\\HSU\\그 외\\3학년\\네트워크프로그래밍\\프로젝트\\img\\notes\\notes_bb.png");
+     // 이미지 경로 수정: getClass().getResource()를 사용하여 이미지를 로드
+        ImageIcon c = new ImageIcon(getClass().getResource("/img/notes/notes_c#.png"));
+        ImageIcon e = new ImageIcon(getClass().getResource("/img/notes/notes_eb.png"));
+        ImageIcon f = new ImageIcon(getClass().getResource("/img/notes/notes_f#.png"));
+        ImageIcon a = new ImageIcon(getClass().getResource("/img/notes/notes_ab.png"));
+        ImageIcon b = new ImageIcon(getClass().getResource("/img/notes/notes_bb.png"));
 
         Image imgC = c.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         ImageIcon resizedIconC = new ImageIcon(imgC);
@@ -263,7 +265,7 @@ public class P01 extends JFrame {
         panel_notes_black.add(btn_b_flat03);
         
     
-        // panel_keyboard (배경 이미지용 패널
+        // panel_keyboard (배경 이미지용 패널)
         JPanel panel_keyboard = new JPanel();
 		panel_keyboard.setBounds(0, 100, 1476, 616); contentPane.add(panel_keyboard);
 		 
