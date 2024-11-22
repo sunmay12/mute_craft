@@ -10,7 +10,6 @@ public class Electric extends JFrame {
         setBounds(100, 100, 867, 393);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        
         // Content Pane 설정
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
