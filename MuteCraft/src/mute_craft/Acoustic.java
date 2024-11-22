@@ -76,6 +76,7 @@ public class Acoustic extends JFrame {
         setVisible(true);
     }
 
+    
     // 녹음 시작: 기존 사운드 순서 초기화 및 녹음 상태 변경
     private void startRecording() {
         soundSequence.clear();
