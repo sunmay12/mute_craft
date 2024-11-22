@@ -71,6 +71,7 @@ public class ChatPage extends JFrame {
         textPane = new JTextPane();
         textPane.setEditable(false);  // 수정 불가
         textPane.setContentType("text/html");  // HTML 콘텐츠 타입 사용
+        textPane.setBackground(new Color(230, 230, 230)); 
         JScrollPane scrollPane = new JScrollPane(textPane);
         scrollPane.setBounds(12, 60, 560, 230);
         contentPane.add(scrollPane);
@@ -78,13 +79,24 @@ public class ChatPage extends JFrame {
         // 메시지 입력 필드
         txtInput = new JTextField();
         txtInput.setBounds(12, 300, 490, 40);  // 입력 필드 크기 조정
+        txtInput.setBackground(new Color(230, 230, 230)); 
         contentPane.add(txtInput);
         txtInput.setColumns(10);
 
-        // 메시지 전송 버튼
-        JButton btnSend = new JButton("Send");
-        btnSend.setBounds(507, 300, 70, 40);  // 버튼 위치 및 크기 조정
+        // 메시지 전송 버튼 이미지로 변경
+        ImageIcon sendIcon = new ImageIcon(getClass().getResource("/img/send.png"));  // send.png 이미지 로드
+        Image imgSend = sendIcon.getImage();
+        Image resizedImgSend = imgSend.getScaledInstance(54, 54, Image.SCALE_SMOOTH);  // 버튼 크기에 맞게 이미지 크기 조정
+        sendIcon = new ImageIcon(resizedImgSend);
+
+        // 버튼 생성
+        JButton btnSend = new JButton(sendIcon);
+        btnSend.setBounds(507, 295, 54, 54);  // 버튼 위치 및 크기 조정
+        btnSend.setContentAreaFilled(false);  // 버튼 배경을 투명으로 설정
+        btnSend.setBorderPainted(false);  // 버튼 테두리 없애기
+        btnSend.setFocusPainted(false);  // 버튼 클릭 시 테두리 효과 없애기
         contentPane.add(btnSend);
+
 
         // 서버 연결 및 로그인 처리
         try {
