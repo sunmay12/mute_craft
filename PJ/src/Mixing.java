@@ -1,222 +1,123 @@
-import javax.sound.sampled.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.io.File;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-
 public class Mixing extends JFrame {
-    private Clip clip1, clip2;  // 오디오 클립
-    private boolean isPlaying = false;  // 오디오 재생 여부
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
 
-    // 이미지 아이콘 리사이즈 메서드
-    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
-        Image img = icon.getImage();
-        Image resizedImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        return new ImageIcon(resizedImage);
+    // 오디오 파일 경로 변수
+    private String audioFile1 = "src/resources/lydfiler/audio/record_piano.wav";
+    private String audioFile2 = "src/resources/lydfiler/audio/record_acoustic.wav";
+    private String audioFile3 = "src/resources/lydfiler/audio/record_electric.wav";
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                Mixing frame = new Mixing();
+                frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public Mixing() {
-        setTitle("Mixing Audio");
+        setTitle("Mixing");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 852, 393);  // 창 크기 설정
+        setBounds(100, 100, 852, 393);
 
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
-        contentPane.setLayout(new BorderLayout());  // 전체 프레임을 BorderLayout으로 설정
+        contentPane.setLayout(new BorderLayout());
 
-        // panel_buttons (버튼을 담을 패널)
-        JPanel panel_buttons = new JPanel();
-        panel_buttons.setLayout(new BorderLayout());
-        panel_buttons.setPreferredSize(new Dimension(852, 50));  // 상단 버튼 영역 크기 설정
+        // 상단 레이아웃을 FlowLayout으로 설정 (Mixing 레이블은 왼쪽 정렬)
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));  // 왼쪽 정렬
+        contentPane.add(topPanel, BorderLayout.NORTH);
 
-        // 이미지 아이콘 설정
-        ImageIcon button_back = new ImageIcon(getClass().getResource("/img/button_back.png"));
-        ImageIcon button_play = new ImageIcon(getClass().getResource("/img/button_play.png"));
-        ImageIcon button_stop = new ImageIcon(getClass().getResource("/img/button_stop.png"));
-        ImageIcon button_record = new ImageIcon(getClass().getResource("/img/button_record.png"));
-        ImageIcon metronome = new ImageIcon(getClass().getResource("/img/metronome.png"));
-
-        JButton backbtn = new JButton("");
-        JButton addbtn = new JButton("");
+        // "Mixing" 레이블 생성 (왼쪽에 배치)
         JLabel leftLabel = new JLabel("Mixing");
         leftLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+        topPanel.add(leftLabel);  // 레이블을 왼쪽에 추가
 
-        // 왼쪽 패널
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        leftPanel.add(backbtn);
-        leftPanel.add(leftLabel);
-
-        // 중앙 패널 (재생/멈춤 버튼)
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 10));
-        JButton playbtn = new JButton("");
-        JButton stopbtn = new JButton("");
-        JButton recordbtn = new JButton("");
-        JButton metronomebtn = new JButton("");
-        centerPanel.add(playbtn);
-        centerPanel.add(stopbtn);
-        centerPanel.add(recordbtn);
-        centerPanel.add(metronomebtn);
-
-        // 이미지 버튼 설정
-        backbtn.setIcon(resizeIcon(button_back, 25, 25));
-        backbtn.setContentAreaFilled(false);
-        backbtn.setBorderPainted(false);
-        backbtn.setFocusPainted(false);
-        backbtn.setPreferredSize(new Dimension(50, 50));
-
-        playbtn.setIcon(resizeIcon(button_play, 25, 25));
-        playbtn.setContentAreaFilled(false);
-        playbtn.setBorderPainted(false);
-        playbtn.setFocusPainted(false);
-        playbtn.setPreferredSize(new Dimension(50, 50));
-
-        stopbtn.setIcon(resizeIcon(button_stop, 25, 25));
-        stopbtn.setContentAreaFilled(false);
-        stopbtn.setBorderPainted(false);
-        stopbtn.setFocusPainted(false);
-        stopbtn.setPreferredSize(new Dimension(50, 50));
-
-        recordbtn.setIcon(resizeIcon(button_record, 25, 25));
-        recordbtn.setContentAreaFilled(false);
-        recordbtn.setBorderPainted(false);
-        recordbtn.setFocusPainted(false);
-        recordbtn.setPreferredSize(new Dimension(50, 50));
-
-        metronomebtn.setIcon(resizeIcon(metronome, 25, 25));
-        metronomebtn.setContentAreaFilled(false);
-        metronomebtn.setBorderPainted(false);
-        metronomebtn.setFocusPainted(false);
-        metronomebtn.setPreferredSize(new Dimension(50, 50));
-
-        // 패널에 추가
-        panel_buttons.add(leftPanel, BorderLayout.WEST);
-        panel_buttons.add(centerPanel, BorderLayout.CENTER);
-        contentPane.add(panel_buttons, BorderLayout.NORTH);  // 상단에 추가
-
-        // 오디오 파일 준비
-        try {
-            File audioFile1 = new File("src/resources/lydfiler/audio/Material Girl.wav");
-            File audioFile2 = new File("src/resources/lydfiler/audio/Last Christmas.wav");
-
-            AudioInputStream audioStream1 = AudioSystem.getAudioInputStream(audioFile1);
-            AudioInputStream audioStream2 = AudioSystem.getAudioInputStream(audioFile2);
-
-            clip1 = AudioSystem.getClip();
-            clip1.open(audioStream1);
-
-            clip2 = AudioSystem.getClip();
-            clip2.open(audioStream2);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-
-        // 재생 버튼 기능
-        playbtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!isPlaying) {
-                    playAudio();  // 오디오 재생
-                    isPlaying = true;
-                }
-            }
+        // "Play All" 버튼을 가운데 배치하기 위한 별도 패널 생성
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 260, 0));  // 가운데 정렬
+        JButton playAllButton = new JButton("Play All");
+        playAllButton.addActionListener(e -> {
+            // 각 오디오 파일을 별도 스레드에서 재생
+            new Thread(() -> playAudio(audioFile1)).start();
+            new Thread(() -> playAudio(audioFile2)).start();
+            new Thread(() -> playAudio(audioFile3)).start();
         });
 
-        // 멈춤 버튼 기능
-        stopbtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                stopAudio();  // 오디오 멈춤
-                isPlaying = false;
-            }
-        });
+        // 가운데 정렬을 위해 버튼을 centerPanel에 추가
+        centerPanel.add(playAllButton);  // 버튼을 가운데에 배치
+
+        // 가운데 패널을 topPanel에 추가하여 레이블과 버튼이 각각 왼쪽과 가운데에 배치되도록 함
+        topPanel.add(Box.createHorizontalGlue());  // 남은 공간을 채우기 위한 Glue 추가
+        topPanel.add(centerPanel);
+
+        // 왼쪽에 세로로 정렬된 버튼 패널 생성
+        JPanel leftPanel2 = new JPanel();
+        leftPanel2.setLayout(new BoxLayout(leftPanel2, BoxLayout.Y_AXIS));
+        contentPane.add(leftPanel2, BorderLayout.WEST);
+
+        // 상단에 간격을 추가하여 버튼들이 너무 위쪽에 붙지 않게 함
+        leftPanel2.add(Box.createVerticalStrut(50));  // 위쪽 여백 추가
 
         // 첫 번째 오디오 재생 버튼
-        JButton btnPlay1 = new JButton("Material Girl");
-        btnPlay1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playSingleAudio(1);  // 첫 번째 오디오만 재생
-            }
-        });
-       // btnPlay1.setPreferredSize(new Dimension(200, 100));  // 크기 설정
-        btnPlay1.setMaximumSize(new Dimension(200, 100)); 
-        btnPlay1.setBackground(Color.pink);
-        btnPlay1.setHorizontalAlignment(SwingConstants.CENTER); // 텍스트 가로 정렬
-        btnPlay1.setVerticalAlignment(SwingConstants.CENTER);   // 텍스트 세로 정렬
-        btnPlay1.setFont(new Font("Arial", Font.PLAIN, 14));  // 글씨 크기 설정
-        
+        JButton playAudio1Button = new JButton("Play Audio 1");
+        playAudio1Button.addActionListener(e -> playAudio(audioFile1));
+        leftPanel2.add(playAudio1Button);
+
         // 두 번째 오디오 재생 버튼
-        JButton btnPlay2 = new JButton("Last Christmas");
-        btnPlay2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playSingleAudio(2);  // 두 번째 오디오만 재생
+        JButton playAudio2Button = new JButton("Play Audio 2");
+        playAudio2Button.addActionListener(e -> playAudio(audioFile2));
+        leftPanel2.add(Box.createVerticalStrut(10)); // 간격 추가
+        leftPanel2.add(playAudio2Button);
+
+        // 세 번째 오디오 재생 버튼
+        JButton playAudio3Button = new JButton("Play Audio 3");
+        playAudio3Button.addActionListener(e -> playAudio(audioFile3));
+        leftPanel2.add(Box.createVerticalStrut(10)); // 간격 추가
+        leftPanel2.add(playAudio3Button);
+    }
+
+    // 오디오 재생 메서드
+    private void playAudio(String filePath) {
+        try {
+            File audioFile = new File(filePath);
+            if (!audioFile.exists()) {
+                System.out.println("파일이 존재하지 않습니다: " + filePath);
+                return;
             }
-        });
-       // btnPlay2.setPreferredSize(new Dimension(200, 100));  // 크기 설정
-        btnPlay2.setMaximumSize(new Dimension(200, 100)); 
-        btnPlay2.setBackground(Color.pink);
-        btnPlay2.setHorizontalAlignment(SwingConstants.CENTER); // 텍스트 가로 정렬
-        btnPlay2.setVerticalAlignment(SwingConstants.CENTER);   // 텍스트 세로 정렬
-        btnPlay2.setFont(new Font("Arial", Font.PLAIN, 14));  // 글씨 크기 설정
-        
-        // 버튼들을 BoxLayout으로 세로로 정렬
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS)); // 세로로 배치
-        buttonPanel.add(Box.createVerticalStrut(30)); 
-        buttonPanel.add(btnPlay1);
-        buttonPanel.add(Box.createVerticalStrut(30));
-        buttonPanel.add(btnPlay2);
 
-        contentPane.add(buttonPanel, BorderLayout.WEST);  // 왼쪽에 배치
-    }
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
 
-    // 두 개의 오디오 파일을 모두 재생하는 메서드
-    private void playAudio() {
-        clip1.setFramePosition(0);  // 첫 번째 오디오 초기화
-        clip1.start();  // 첫 번째 오디오 시작
+            // 클립이 끝날 때까지 대기
+            Thread.sleep(clip.getMicrosecondLength() / 1000);
 
-        clip2.setFramePosition(0);  // 두 번째 오디오 초기화
-        clip2.start();  // 두 번째 오디오 시작
-    }
-
-    // 선택한 오디오 하나만 재생하는 메서드
-    private void playSingleAudio(int audioNumber) {
-        if (audioNumber == 1) {
-            clip1.setFramePosition(0);  // 첫 번째 오디오 초기화
-            clip1.start();  // 첫 번째 오디오 시작
-        } else if (audioNumber == 2) {
-            clip2.setFramePosition(0);  // 두 번째 오디오 초기화
-            clip2.start();  // 두 번째 오디오 시작
+            clip.close(); // 리소스 해제
+            System.out.println("재생 완료: " + filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    // 오디오 멈추기 메서드
-    private void stopAudio() {
-        if (clip1.isRunning()) {
-            clip1.stop();  // 첫 번째 오디오 멈추기
-        }
-        if (clip2.isRunning()) {
-            clip2.stop();  // 두 번째 오디오 멈추기
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Mixing frame = new Mixing();
-                frame.setVisible(true);
-            }
-        });
     }
 }
